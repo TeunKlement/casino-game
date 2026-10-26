@@ -1,5 +1,6 @@
 from games.roulette import play_roulette
 from games.fruitmachine import fruitmachine_spelen
+from games.blackjack import play_blackjack
 
 ENTREE_FEE = 10
 FREE_MANDATORY_DRINK = 3.50
@@ -11,7 +12,7 @@ def show_main_menu():
     print(f"Casino de Gouden Driehoek - hoofdmenu\n{"-"* 41}\n1. Spellen\n2. Saldo\n3. Account\n0. Stop\n")
 
 def show_games_menu():
-    print(f"Casino de Gouden Driehoek - spellen\n{"-" * 41}\n1. Fruitmachine\n2. Roulette\n0. Terug\n")
+    print(f"Casino de Gouden Driehoek - spellen\n{"-" * 41}\n1. Fruitmachine\n2. Roulette\n3. Blackjack\n0. Terug\n")
 
 def show_balance(balance):
     print(f"{"-" * 41}\nHuidig saldo: € {balance:.2f}\n{"-" * 41}")
@@ -72,7 +73,7 @@ def main():
                 break
             case 1:
                 show_games_menu()
-                game_choice = int(input("kies een waarde tussen 0 en 2: "))
+                game_choice = int(input("kies een waarde tussen 0 en 3: "))
                 match game_choice:
                     case 0:
                         continue
@@ -80,6 +81,8 @@ def main():
                         balance = fruitmachine_spelen(balance)
                     case 2:
                         balance = play_roulette(balance)
+                    case 3:
+                        balance = play_blackjack(balance)
                     case _:
                         print("ongeldige invoer, probeer opnieuw")
             case 2:
