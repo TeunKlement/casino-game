@@ -1,8 +1,13 @@
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+from datetime import date, datetime
 MIN_AGE = 18
 players = {'Teun': {'naam': 'Teun', "geboortedatum": '20-1-1998', 'gender': 'M', 'saldo': 30, 'gespeelde_spellen': {},},
            'John': {'naam': 'John', 'geboortedatum': '4-4-1997', 'gender': 'M', 'saldo': 20, 'gespeelde_spellen': {},},
            'Annely': {'naam': 'Annely', 'geboortedatum': '9-10-1998', 'gender': 'V', 'saldo': 35, 'gespeelde_spellen': {},}}
 current_player = ""
+console = Console()
 
 def get_current_balance():
     return players[current_player]['saldo']
@@ -21,11 +26,16 @@ def determine_salutation(name, gender):
     if gender == "M":
         return f"Welkom, meneer {name}"
     else :
-        return f"Welkom, meneer {name}"
+        return f"Welkom, mevrouw {name}"
 
 def check_age(birthdate):
-    birth_day, birth_month, birth_year = birthdate.split("-")
-    age = 2026 - int(birth_year)
+    today_value = date.today()
+    birthdate_value = datetime.strptime(birthdate, "%d-%m-%Y").date()
+    age = today_value.year - birthdate_value.year
+
+    if (today_value.month, today_value.day) < (birthdate_value.month, birthdate_value.day):
+        age -= 1
+
     if age < MIN_AGE:
         print("Je bent niet oud genoeg om te gokken. Het programma wordt afgesloten.")
         exit(1)
@@ -60,12 +70,16 @@ def create_account(total_mandatory_cost, name=None):
     return
 
 def show_account():
-    print(f"Casino de Gouden Driehoek - account\n{"-" * 41}\nNaam: {current_player}\nVerjaardag: {players[current_player]['geboortedatum']}\nAanspreekvorm: {players[current_player]['gender']}\n")
-    print(f"Overige speleraccounts: {" | ".join(players)}")
+    console.print(Panel.fit(f"Naam: {current_player}\nVerjaardag: {players[current_player]['geboortedatum']}\nAanspreekvorm: {players[current_player]['gender']}\n\nOverige speleraccounts: {" | ".join(players)}", title='Casino de Gouden Driehoek - account'))
 
 def show_all_players():
+    table = Table(expand=True)
+    table.add_column('Optie')
+    table.add_column('Actie')
     for naam, key in players.items():
-        print(f"Speler {naam} | huidige saldo: € {players[naam]['saldo']:.2f}")
+        table.add_row(naam, f"€ {players[naam]['saldo']:.2f}")
+
+    console.print(Panel.fit((table), title='De gouden driehoek - alle spelers'))
 
 def create_profile(name, birthdate, gender, balance):
     return {"naam": name, "geboortedatum": birthdate, "gender": gender, "saldo": balance, "gespeelde_spellen": {},}
@@ -104,7 +118,7 @@ def initialize_player(total_mandatory_cost):
         profile = players[current_player]
         salutation = determine_salutation(current_player, profile["gender"])
         balance = profile["saldo"]
-        print(f"\n{"-" * 41}\nCasino de gouden driehoek\n{"-" * 41}\n{salutation}\n\nWelkom terug!\nJe huidige saldo is: €{balance}")
+        console.print(Panel.fit(f"{salutation}\n\nWelkom terug!\n\nJe huidige saldo is: €{balance}", title="Casino de gouden driehoek"))
     else:
         create_account(total_mandatory_cost, name)
 
@@ -116,4 +130,4 @@ def initialize_player(total_mandatory_cost):
             entree_check = "onvoldoende"
         else:
             entree_check = "voldoende"
-        print(f"\n{"-" * 41}\nCasino de gouden driehoek\n{"-" * 41}\n{salutation}\n\nStartbudget: € {start_amount:.2f}\nVaste kosten: €{total_mandatory_cost:.2f}\nSaldo: €{balance:.2f}\n\nJe hebt {entree_check} budget voor toegang tot het casino.")
+        print(f"\n{"-" * 41}\nCasino de gouden driehoek\n{"-" * 41}\n{salutation}\n\nStartbudget: € {start_amount:.2f}\nVaste kosten: €{total_mandatory_cost:.2f}\nSaldo: €{balance:.2f}\n\nJe hebt {entree_check} budget voor toegang tot het casino.\n")
